@@ -1,5 +1,5 @@
 // load UPPERCASE-CORE.
-require('../../UPPERCASE-CORE/NODE.js');
+require('./DIST/NODE.js');
 
 /*
  * distribute UPPERCASE.
@@ -18,7 +18,7 @@ RUN(() => {
 		//REQUIRED: path
 
 		FIND_FILE_NAMES({
-			path : path,
+			path : './SRC/' + path,
 			isSync : true
 		}, {
 
@@ -34,7 +34,7 @@ RUN(() => {
 		});
 
 		FIND_FOLDER_NAMES({
-			path : path,
+			path : './SRC/' + path,
 			isSync : true
 		}, {
 
@@ -69,24 +69,16 @@ RUN(() => {
 			}
 			
 			content += READ_FILE({
-				path : scriptPath,
+				path : './SRC/' + scriptPath,
 				isSync : true
 			}).toString();
 		});
 		
 		WRITE_FILE({
-			path : '../../' + TITLE + '/' + path + '.js',
+			path : './DIST/' + path + '.js',
 			content : content,
 			isSync : true
 		});
-		
-		if (path === 'COMMON') {
-			WRITE_FILE({
-				path : '../../' + TITLE + '-COMMON/' + path + '.js',
-				content : content,
-				isSync : true
-			});
-		}
 		
 		if (isToSaveMin === true) {
 			
@@ -98,92 +90,19 @@ RUN(() => {
 		
 			EACH(scriptPaths, (scriptPath) => {
 				content += MINIFY_JS(READ_FILE({
-					path : scriptPath,
+					path : './SRC/' + scriptPath,
 					isSync : true
 				}));
 			});
 	
 			WRITE_FILE({
-				path : '../../' + TITLE + '/' + path + '.MIN.js',
+				path : './DIST/' + path + '.MIN.js',
 				content : content,
 				isSync : true
 			});
-			
-			if (path === 'COMMON') {
-				WRITE_FILE({
-					path : '../../' + TITLE + '-COMMON/' + path + '.MIN.js',
-					content : content,
-					isSync : true
-				});
-			}
 		}
 		
 		return content;
-	};
-
-	let copyFolder = (from, to) => {
-
-		let realTo = '../../' + TITLE + '/' + to;
-
-		FIND_FILE_NAMES({
-			path : from,
-			isSync : true
-		}, {
-
-			notExists : () => {
-				// ignore.
-			},
-
-			success : (fileNames) => {
-				EACH(fileNames, (fileName) => {
-					
-					if (fileName.substring(fileName.lastIndexOf('.')) === '.css') {
-						
-						let content = READ_FILE({
-							path : from + '/' + fileName,
-							isSync : true
-						});
-						
-						WRITE_FILE({
-							path : realTo + '/' + fileName.substring(0, fileName.lastIndexOf('.')) + '.css',
-							content : content,
-							isSync : true
-						});
-						
-						WRITE_FILE({
-							path : realTo + '/' + fileName.substring(0, fileName.lastIndexOf('.')) + '.MIN.css',
-							content : MINIFY_CSS(content),
-							isSync : true
-						});
-					}
-					
-					else {
-						
-						COPY_FILE({
-							from : from + '/' + fileName,
-							to : realTo + '/' + fileName,
-							isSync : true
-						});
-					}
-				});
-			}
-		});
-
-		FIND_FOLDER_NAMES({
-			path : from,
-			isSync : true
-		}, {
-
-			notExists : () => {
-				// ignore.
-			},
-
-			success : (folderNames) => {
-				EACH(folderNames, (folderName) => {
-					copyFolder(from + '/' + folderName, to + '/' + folderName);
-				});
-			}
-		});
 	};
 	
 	let distFolder = (preScripts, name, isToSaveMin) => {
@@ -206,7 +125,6 @@ RUN(() => {
 		let commonScripts = distFolder([], 'COMMON', true);
 		distFolder(commonScripts, 'BROWSER', true);
 		distFolder(commonScripts, 'NODE');
-		copyFolder('R', 'R');
 	};
 
 	INIT_OBJECTS();

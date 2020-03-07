@@ -1,0 +1,17 @@
+{
+	"name": "uppercase-core",
+	"version": "2.0.0-beta",
+	"dependencies": {
+		"bufferutil": "latest",
+		"diskspace": "latest",
+		"formidable": "latest",
+		"hanul-graphicsmagick": "latest",
+		"hanul-uglify-js": "latest",
+		"os-locale": "latest",
+		"sift": "latest",
+		"sqwish": "latest",
+		"utf-8-validate": "latest",
+		"ws": "latest"
+	},
+	"main": "index.js"
+}
